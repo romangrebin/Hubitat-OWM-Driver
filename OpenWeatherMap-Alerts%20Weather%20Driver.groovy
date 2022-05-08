@@ -2,118 +2,6 @@
 	OpenWeatherMap-Alerts Weather Driver
 	Import URL: https://raw.githubusercontent.com/HubitatCommunity/OpenWeatherMap-Alerts-Weather-Driver/master/OpenWeatherMap-Alerts%2520Weather%2520Driver.groovy
 	Copyright 2020 @Matthew (Scottma61)
-
-	This driver has morphed many, many times, so the genesis is very blurry now.  It stated as a WeatherUnderground
-	driver, then when they restricted their API it morphed into an APIXU driver.  When APIXU ceased it became a
-	Dark Sky driver .... and now that Dark Sky is going away it is morphing into a OpenWeatherMap driver.
-
-	Many people contributed to the creation of this driver.  Significant contributors include:
-	- @Cobra who adapted it from @mattw01's work and I thank them for that!
-	- @bangali for his original APIXU.COM base code that much of the early versions of this driver was
-	 adapted from.
-	- @bangali for his the Sunrise-Sunset.org code used to calculate illuminance/lux and the more
-	 recent adaptations of that code from @csteele in his continuation driver 'wx-ApiXU'.
-	- @csteele (and prior versions from @bangali) for the attribute selection code.
-	- @csteele for his examples on how to convert to asyncHttp calls to reduce Hub resource utilization.
-	- @bangali also contributed the icon work from
-	 https://github.com/jebbett for new cooler 'Alternative' weather icons with icons courtesy
-	 of https://www.deviantart.com/vclouds/art/VClouds-Weather-Icons-179152045.
-	- @storageanarchy for his Dark Sky Icon mapping and some new icons to compliment the Vclouds set.
-	- @nh.schottfam for lots of code clean up and optimizations.
-
-	In addition to all the cloned code from the Hubitat community, I have heavily modified/created new
-	code myself @Matthew (Scottma61) with lots of help from the Hubitat community.  If you believe you
-	should have been acknowledged or received attribution for a code contribution, I will happily do so.
-	While I compiled and orchestrated the driver, very little is actually original work of mine.
-
-	This driver is free to use.  I do not accept donations. Please feel free to contribute to those
-	mentioned here if you like this work, as it would not have been possible without them.
-
-	This driver is intended to pull weather data from OpenWeatherMap.org (https://OpenWeatherMap.org). You will need your
-	OpenWeatherMap API key to use the data from that site.  It also pulls in weather alerts from the Nation Weather
-	Service's API (weather.gov).  At the present time there is no API required for consume Alert data.
-
-	The driver exposes both metric and imperial measurements for you to select from.
-
-	Licensed under the Apache License, Version 2.0 (the 'License'); you may not use this file except
-	in compliance with the License. You may obtain a copy of the License at:
-
-	http://www.apache.org/licenses/LICENSE-2.0
-
-	Unless required by applicable law or agreed to in writing, software distributed under the License is distributed
-	on an 'AS IS' BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License
-	for the specific language governing permissions and limitations under the License.
-
-	Last Update 04/17/2022
-	{ Left room below to document version changes...}
-
-	V0.5.4	04/17/2027	Fallback for Sunrise-Sunset.org failure.
-	V0.5.3	08/11/2021	Exposed cloud coverage forecasts.
-	V0.5.2	01/26/2021	Corrected a display issue on Alerts.
-	V0.5.1	12/12/2020	Changes to dahboard tile logo/hyperlinks when using weather.gov for alerts and there is an alert.
-	V0.5.0	12/08/2020	Bug fix for 'forecast_textn' optional attributes.
-	V0.4.9	12/03/2020	New tinyurl for icons.  Added tinyurl for weather.gov alert poll.
-	V0.4.8	12/01/2020	Added ability to select Weather Alert source (none/OWM/Weather.gov {US Only}).
-	V0.4.7	11/26/2020	Bug fixes.  Fix timeouts on http calls (by @nh.schottfam).
-	V0.4.6	11/06/2020	Refactored the dashboard tiles.
-	V0.4.5	10/31/2020	Tweaked threedayfcstTile for small screens.
-	V0.4.4	10/30/2020	More code cleanups/reductions/optimizations by @nh.schottfam.
-	V0.4.3	10/29/2020	Bug fixes and the usual code cleanup/reduction/optimizations by @nh.schottfam.
-	V0.4.2	10/29/2020	Yet another Precip bux fix.
-	V0.4.1	10/29/2020	Move today's precip back to 'Daily'.  More bux fixes.
-	V0.4.0	10/28/2020	More Bux fixes for new Probability of Precipitation (PoP) from OWM.
-	V0.3.9	10/28/2020	Bux fixes for new Probability of Precipitation (PoP) from OWM.
-	V0.3.8	10/28/2020	Added Probability of Precipitation (PoP) from OWM.  Bug fixes and code and string reductions by @nh.schottfam).
-	V0.3.7	10/27/2020	Bug fixes.
-	V0.3.6	10/27/2020	Removed '+' from attribute names.  Three Day Tile now has optional 'Low/High' or 'High/Low' setting.
-	V0.3.5	10/25/2020	Bug fixes for null JSON returns.
-	V0.3.4	10/24/2020	Added indicator of multiple alerts in tiles. Minor bug fixes (by @nh.schottfam).
-	V0.3.3	10/23/2020	Code optimizations and minor bug fixes (by @nh.schottfam).
-	V0.3.2	10/22/2020	Removed 'NWS' from driver name, minor bug fixes.
-	V0.3.1	10/21/2020	Improved OWM URLs in the dashboard tiles to pull in location's city code (if available).
-	V0.3.0	10/21/2020	Better OWM URLs in the dashboard tiles.
-	V0.2.9	10/20/2020	Correcting some Tile displays from the last update.
-	V0.2.8	10/20/2020	Pulling Alerts from OWM instead of NWS.
-	V0.2.7	10/19/2020	Added forecast 'Morn', 'Day', 'Eve' and 'Night' temperatures for current day and tomorrow.
-	V0.2.6	10/07/2020	Change to use asynchttp for NWS alerts (by @nh.schottfam).
-	V0.2.5	10/02/2020	More string constant optimizations (by @nh.schottfam)
-	V0.2.4	09/27/2020	Fix to allow for use of multiple virtual devices, More string constant optimizations (by @nh.schottfam)
-	V0.2.3	09/24/2020	More string constant optimizations, and removal of white space characters (by @nh.schottfam)
-	V0.2.2	09/23/2020	Removing 'urgency' restrictions from alerts poll
-	V0.2.1	09/22/2020	Added forecast icon url attributes for tomorrow and day-after-tomorrow
-	V0.2.0	09/21/2020	Added forecast High/Low temp attributes for tomorrow and day-after-tomorrow
-	V0.1.9	09/16/2020	Removing 'severity' and 'certainty' restrictions from alerts poll
-	V0.1.8	09/13/2020	Re-worked Alerts to not be dependent on api.weather.gov returning a valid response code
-	V0.1.7	09/12/2020	Remove most DB accesses and string cleanup (by @nh.schottfam)
-	V0.1.6	09/08/2020	Restoring 'certainty' to weather.gov alert poll
-	V0.1.5	09/08/2020	Removed 'certainty' from weather.gov alert poll
-	V0.1.4	09/07/2020	Bug fix for NullPointerException on line 580
-	V0.1.3	09/05/2020	Improved Alert handling for dashboard tiles, again, various bug fixes
-	V0.1.2	07/02/2020	Bug fix sync MyTile and weatherSummary tiles upon alert update
-	V0.1.1	06/06/2020	Bug fix to exclude minutely and hourly data in poll
-	V0.1.0	05/07/2020	Improved Alert handling for dashboard tiles, various bug fixes
-	V0.0.9	04/24/2020	Continue to work on improving null handling, various bug fixes
-	V0.0.8	4/23/2020-2	Numerous bug fixes, better handling where alerts are not available, handling nulls
-	V0.0.7	04/23/2020	Numerous bug fixes, better handling where alerts are not available
-	V0.0.6	04/20/2020	Refactored much of the code, added Hubitat Package Manager compatibility
-	V0.0.5	04/19/2020	More code cleanup and optimizations (Thanks @nh.schottfam!)
-	V0.0.4	04/18/2020	Corrected forecast icon to always be 'day' instead of current time
-	V0.0.3	04/18/2020	More fixes on Alerts, mapped condition_code, weatherIcon(s)
-	V0.0.2	04/17/2020	Fixed Alerts on myTile and alertTile, Capitalized condition_text
-	V0.0.1	04/17/2020	Initial conversion from Dark Sky to OWM
-=========================================================================================================
-**ATTRIBUTES CAUTION**
-The way the 'optional' attributes work:
- - Initially, only the optional attributes selected will show under 'Current States' and will be available
-	in dashboard.
- - Once an attribute has been selected it too will show under 'Current States' and be available in dashboard.
-	<*** HOWEVER ***> If you ever de-select the optional attribute, it will still show under 'Current States'
-	and will still show as an attribute for dashboards **BUT IT'S DATA WILL NO LONGER BE REFRESHED WITH DATA
-	POLLS**.  This means what is shown on the 'Current States' and dashboard tiles for de-selected attributes
-	may not be current valid data.
- - To my knowledge, the only way to remove the de-selected attribute from 'Current States' and not show it as
-	available in the dashboard is to delete the virtual device and create a new one AND DO NOT SELECT the
-	attribute you do not want to show.
 */
 //file:noinspection GroovyUnusedAssignment
 static String version()	{  return '0.5.4'  }
@@ -214,7 +102,6 @@ metadata {
 			input 'pollIntervalForecast', 'enum', title: 'External Source Poll Interval (daytime)', required: true, defaultValue: '3 Hours', options: ['Manual Poll Only', '2 Minutes', '5 Minutes', '10 Minutes', '15 Minutes', '30 Minutes', '1 Hour', '3 Hours']
 			input 'pollIntervalForecastnight', 'enum', title: 'External Source Poll Interval (nighttime)', required: true, defaultValue: '3 Hours', options: ['Manual Poll Only', '2 Minutes', '5 Minutes', '10 Minutes', '15 Minutes', '30 Minutes', '1 Hour', '3 Hours']
 			input 'logSet', 'bool', title: 'Enable extended Logging', description: '<i>Extended logging will turn off automatically after 30 minutes.</i>', required: true, defaultValue: false
-			input 'alertSource', 'enum', required: true, defaultValue: sONE, title: 'Weather Alert Source<br>0=None 1=OWM or 2=Weather.gov (US only)', options: [0:sZERO, 1:sONE, 2:sTWO]
 			input 'tempFormat', 'enum', required: true, defaultValue: 'Fahrenheit (°F)', title: 'Display Unit - Temperature: Fahrenheit (°F) or Celsius (°C)',  options: ['Fahrenheit (°F)', 'Celsius (°C)']
 			input 'TWDDecimals', 'enum', required: true, defaultValue: sZERO, title: 'Display decimals for Temperature & Wind Speed', options: [0:sZERO, 1:sONE, 2:'2', 3:'3', 4:'4']
 			input 'RDecimals', 'enum', required: true, defaultValue: sZERO, title: 'Display decimals for Precipitation', options: [0:sZERO, 1:sONE, 2:'2', 3:'3', 4:'4']
@@ -617,49 +504,31 @@ void pollOWMHandler(resp, data) {
 		myUpdData('feelsLike', adjTemp(owm?.current?.feels_like, isF, mult_twd))
 
 		if(alertPublish) {
-			if(alertSource==sTWO) {
-/*  for testing a different Lat/Lon location uncommnent the two lines below */
-//	String altLat = "44.809122" //"41.5051613" // "40.6" //"38.627003" //"30.6953657"
-//	String altLon = "-68.735892" //"-81.6934446" // "-75.43" //"-90.199402" //-88.0398912"
-				pollWDG()
-			}
-			if((alertSource==sZERO) || (!owm.alerts && alertSource==sONE) || (myGetData('curAl')==sNCWA && alertSource==sTWO)) {
+			if(!owm.alerts) {
 				clearAlerts()
 			}else{
-				if(alertSource==sONE) {
-					Map owmAlerts0= owm?.alerts ? owm.alerts[0] : null
-					String curAl = owmAlerts0?.event==null ? sNCWA : owmAlerts0.event.replaceAll('\n', sSPC).replaceAll('[{}\\[\\]]', sBLK)
-					String curAlSender = owmAlerts0?.sender_name==null ? sNULL : owmAlerts0.sender_name.replaceAll('\n',sSPC).replaceAll('[{}\\[\\]]', sBLK)
-					String curAlDescr = owmAlerts0?.description==null ? sNULL : owmAlerts0.description.replaceAll('\n',sSPC).replaceAll('[{}\\[\\]]', sBLK).take(1024)
-					if(curAl==sNCWA) {
-						clearAlerts()
-					}else{
-						Integer alertCnt = 0
-						for(Integer i = 1;i<10;i++) {
-							if(owm?.alerts[i]?.event!=null) {
-								alertCnt = i
-							}
-						}
-						myUpdData('alertCnt', alertCnt.toString())
-					}
-					myUpdData('alert', curAl + (myGetData('alertCnt') != sZERO ? ' +' + myGetData('alertCnt') : sBLK))
-					myUpdData('curAlSender', curAlSender)
-					myUpdData('curAlDescr', curAlDescr)
-					LOGINFO('OWM Weather Alert: ' + curAl + '; Description: ' + curAlDescr.length() + ' ' +curAlDescr)
-					myUpdData('alertTileLink', '<a style="font-style:italic;color:red" href="https://openweathermap.org/city/' + myGetData('OWML') + '" target="_blank">'+myGetData('alert')+sACB)
-					myUpdData('alertLink',  '<a style="font-style:italic;color:red">'+myGetData('alert')+sACB)
+				Map owmAlerts0= owm?.alerts ? owm.alerts[0] : null
+				String curAl = owmAlerts0?.event==null ? sNCWA : owmAlerts0.event.replaceAll('\n', sSPC).replaceAll('[{}\\[\\]]', sBLK)
+				String curAlSender = owmAlerts0?.sender_name==null ? sNULL : owmAlerts0.sender_name.replaceAll('\n',sSPC).replaceAll('[{}\\[\\]]', sBLK)
+				String curAlDescr = owmAlerts0?.description==null ? sNULL : owmAlerts0.description.replaceAll('\n',sSPC).replaceAll('[{}\\[\\]]', sBLK).take(1024)
+				if(curAl==sNCWA) {
+					clearAlerts()
 				}else{
-/*  for testing a different Lat/Lon location uncommnent the two lines below */
-//	String altLat = "44.809122" //"41.5051613" // "40.6" //"38.627003" //"30.6953657"
-//	String altLon = "-68.735892" //"-81.6934446" // "-75.43" //"-90.199402" //-88.0398912"
-					myUpdData('alert', myGetData('curAl') + (myGetData('alertCnt') != sZERO ? ' +' + myGetData('alertCnt') : sBLK))
-// https://tinyurl.com/zznws points to https://forecast.weather.gov/MapClick.php					
-					myUpdData('alertTileLink', '<a style="font-style:italic;color:red" href="https://tinyurl.com/zznws?lat=' + altLat + '&lon=' + altLon +'" target=\'_blank\'>'+myGetData('alert')+sACB)
-					myUpdData('alertLink',  '<a style="font-style:italic;color:red">'+myGetData('alert')+sACB)
-					if(myGetData('curAl')==sNCWA) {
-						clearAlerts()
+					Integer alertCnt = 0
+					for(Integer i = 1;i<10;i++) {
+						if(owm?.alerts[i]?.event!=null) {
+							alertCnt = i
+						}
 					}
+					myUpdData('alertCnt', alertCnt.toString())
 				}
+				myUpdData('alert', curAl + (myGetData('alertCnt') != sZERO ? ' +' + myGetData('alertCnt') : sBLK))
+				myUpdData('curAlSender', curAlSender)
+				myUpdData('curAlDescr', curAlDescr)
+				LOGINFO('OWM Weather Alert: ' + curAl + '; Description: ' + curAlDescr.length() + ' ' +curAlDescr)
+				myUpdData('alertTileLink', '<a style="font-style:italic;color:red" href="https://openweathermap.org/city/' + myGetData('OWML') + '" target="_blank">'+myGetData('alert')+sACB)
+				myUpdData('alertLink',  '<a style="font-style:italic;color:red">'+myGetData('alert')+sACB)
+
 				myUpdData('noAlert',sFLS)
 				myUpdData('alertDescr', myGetData('curAlDescr'))
 				myUpdData('alertSender', myGetData('curAlSender'))
@@ -668,13 +537,7 @@ void pollOWMHandler(resp, data) {
 			//  <<<<<<<<<< Begin Built alertTile >>>>>>>>>>
 			String alertTile = (myGetData('alert')== sNCWA ? 'No Weather Alerts for ' : 'Weather Alert for ') + myGetData('city') + (myGetData('alertSender')==null || myGetData('alertSender')==sSPC ? '' : ' issued by ' + myGetData('alertSender')) + sBR
 			alertTile+= myGetData('alertTileLink') + sBR
-			if(alertSource==sONE) {
-				alertTile+= '<a href="https://openweathermap.org/city/' + myGetData('OWML') + '" target="_blank">' + sIMGS5 + myGetData(sICON) + 'OWM.png style="height:2em"></a> @ ' + myGetData(sSUMLST)
-			}else{
-				if(alertSource==sTWO) {
-					alertTile+= '<a href=https://tinyurl.com/zznws?lat=' + altLat + '&lon=' + altLon + '" target="_blank">' + sIMGS5 + myGetData(sICON) + 'NWS_240px.png style="height:2em"></a> @ ' + myGetData(sSUMLST)
-				}
-			}
+			alertTile+= '<a href="https://openweathermap.org/city/' + myGetData('OWML') + '" target="_blank">' + sIMGS5 + myGetData(sICON) + 'OWM.png style="height:2em"></a> @ ' + myGetData(sSUMLST)
 			myUpdData('alertTile', alertTile)
 			sendEvent(name: 'alert', value: myGetData('alert'))
 			sendEvent(name: 'alertDescr', value: myGetData('alertDescr'))
@@ -696,48 +559,6 @@ void pollOWMHandler(resp, data) {
 	}
 }
 // >>>>>>>>>> End OpenWeatherMap Poll Routine <<<<<<<<<<
-
-// <<<<<<<<<< Begin polling weather.gov for Alerts >>>>>>>>>>
-void pollWDG() {
-/*  for testing a different Lat/Lon location uncommnent the two lines below */
-//	String altLat = "44.809122" //"41.5051613" // "40.6" //"38.627003" //"30.6953657"
-//	String altLon = "-68.735892" //"-81.6934446" // "-75.43" //"-90.199402" //-88.0398912"
-	Map wdgParams = [ uri: 'https://api.weather.gov/alerts/active?status=actual&message_type=alert,update&point=' + altLat + ',' + altLon,
-		requestContentType:'application/json',
-		contentType:'application/json',
-		timeout: 20
-	]
-	LOGINFO('Poll api.weather.gov/alerts/active: ' + wdgParams)
-	asynchttpGet('pollWDGHandler', wdgParams)
-}
-
-void pollWDGHandler(resp, data) {
-	LOGINFO('Polling weather.gov')
-	if(resp.getStatus() != 200 && resp.getStatus() != 207) {
-		LOGWARN('Calling https://api.weather.gov/alerts/active?status=actual&message_type=alert,update&point=' + altLat + ',' + altLon)
-		LOGWARN(resp.getStatus() + sCOLON + resp.getErrorMessage())
-	}else{
-		Map wdg = parseJson(resp.data)
-		myUpdData('wdg', wdg.toString())
-		LOGINFO('weather.gov Data: ' + wdg.toString())
-		if(wdg.toString()==sNULL) {
-			pauseExecution(1000)
-			pollWDG()
-			return
-		}
-		myUpdData('curAl', wdg?.features[0]?.properties?.event == null ? sNCWA : wdg.features[0].properties.event.replaceAll('\n', sSPC).replaceAll('[{}\\[\\]]', sBLK))
-		myUpdData('curAlSender', wdg?.features[0]?.properties?.senderName==null ? sNULL : wdg?.features[0]?.properties?.senderName.replaceAll('\n',sSPC).replaceAll('[{}\\[\\]]', sBLK))
-		myUpdData('curAlDescr', wdg?.features[0]?.properties?.description==null ? sNULL : wdg?.features[0]?.properties?.description.replaceAll('\n',sSPC).replaceAll('[{}\\[\\]]', sBLK).take(1024))
-		Integer alertCnt = 0
-		for(Integer i = 1;i<10;i++) {
-			if(wdg?.features[i]?.properties?.event!=null) {
-				alertCnt = i
-			}
-		}
-		myUpdData('alertCnt', alertCnt.toString())
-	}
-}
-// >>>>>>>>>> End polling weather.gov for Alerts <<<<<<<<<<
 					
 static String adjTemp(temp, Boolean isF, Integer mult_twd){
 	BigDecimal t_fl
@@ -1028,13 +849,9 @@ void PostPoll() {
 
 	String OWMIcon
 	String OWMText
-	if((alertSource==sZERO) || (alertSource==sONE) || (myGetData('curAl')==sNCWA && alertSource==sTWO)) {
-		OWMIcon = '<a href="https://openweathermap.org/city/' + myGetData('OWML') + '" target="_blank">' + sIMGS5 + myGetData(sICON) + 'OWM.png style="height:2em"></a> @ ' + myGetData(sSUMLST)
-		OWMText = '<a href="https://openweathermap.org" target="_blank">OpenWeatherMap.org</a> @ ' + myGetData(sSUMLST)
-	}else{
-		OWMIcon = '<a href="https://tinyurl.com/zznws?lat=' + altLat + '&lon=' + altLon + '" target="_blank">' + sIMGS5 + myGetData(sICON) + 'NWS_240px.png style="height:2em"></a> @ ' + myGetData(sSUMLST)
-		OWMText = '<a href="https://tinyurl.com/zznws?lat=' + altLat + '&lon=' + altLon + '" target="_blank">Weather.gov</a> @ ' + myGetData(sSUMLST)
-	}
+	OWMIcon = '<a href="https://openweathermap.org/city/' + myGetData('OWML') + '" target="_blank">' + sIMGS5 + myGetData(sICON) + 'OWM.png style="height:2em"></a> @ ' + myGetData(sSUMLST)
+	OWMText = '<a href="https://openweathermap.org" target="_blank">OpenWeatherMap.org</a> @ ' + myGetData(sSUMLST)
+
 //  <<<<<<<<<< Begin Built 3dayfcstTile >>>>>>>>>>
 	if(threedayTilePublish) {
 		Boolean gitclose = (myGetData(sICON).toLowerCase().contains('://github.com/')) && (myGetData(sICON).toLowerCase().contains('/blob/master/'))
@@ -1113,13 +930,9 @@ void buildMyText() {
 //  <<<<<<<<<< Begin Built mytext >>>>>>>>>>
 	String OWMIcon
 	String OWMText
-	if((alertSource==sZERO) || (alertSource==sONE) || (myGetData('curAl')==sNCWA && alertSource==sTWO)) {
-		OWMIcon = '<a href="https://openweathermap.org/city/' + myGetData('OWML') + '" target="_blank">' + sIMGS5 + myGetData(sICON) + 'OWM.png style="height:2em"></a> @ ' + myGetData(sSUMLST)
-		OWMText = '<a href="https://openweathermap.org" target="_blank">OpenWeatherMap.org</a> @ ' + myGetData(sSUMLST)
-	}else{
-		OWMIcon = '<a href="https://tinyurl.com/zznws?lat=' + altLat + '&lon=' + altLon + '" target="_blank">' + sIMGS5 + myGetData(sICON) + 'NWS_240px.png style="height:2em"></a> @ ' + myGetData(sSUMLST)
-		OWMText = '<a href="https://tinyurl.com/zznws?lat=' + altLat + '&lon=' + altLon + '" target="_blank">Weather.gov</a> @ ' + myGetData(sSUMLST)
-	}
+	OWMIcon = '<a href="https://openweathermap.org/city/' + myGetData('OWML') + '" target="_blank">' + sIMGS5 + myGetData(sICON) + 'OWM.png style="height:2em"></a> @ ' + myGetData(sSUMLST)
+	OWMText = '<a href="https://openweathermap.org" target="_blank">OpenWeatherMap.org</a> @ ' + myGetData(sSUMLST)
+
 	if(myTilePublish){ // don't bother setting these values if it's not enabled
 		Boolean gitclose = (myGetData(sICON).toLowerCase().contains('://github.com/')) && (myGetData(sICON).toLowerCase().contains('/blob/master/'))
 		String iconClose = (gitclose ? '?raw=true>' : sRB)
@@ -1270,7 +1083,6 @@ void initMe() {
 	String RDecimals = (settings.RDecimals ?: sZERO)
 	setDisplayDecimals(TWDDecimals, PDecimals, RDecimals)
 	pollOWMl()
-	if(settings.alertSource==sTWO) {pollWDG()}
 }
 void pollOWMl() {
 /*  for testing a different Lat/Lon location uncommnent the two lines below */
